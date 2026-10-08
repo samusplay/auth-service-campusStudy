@@ -1,0 +1,14 @@
+FROM maven:3.9-eclipse-temurin-17
+
+WORKDIR /app
+
+# Descarga dependencias una sola vez (cache)
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
+
+COPY src ./src
+
+EXPOSE 8081
+
+# spring-boot:run mantiene DevTools activo
+CMD ["mvn", "spring-boot:run"]
