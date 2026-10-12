@@ -15,5 +15,10 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<UserResponse> getUserById(Long usuarioId) {
         return null;
+
+
+
+
+
     }
 }

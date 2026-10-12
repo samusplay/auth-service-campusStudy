@@ -34,6 +34,10 @@ public class User {
     @Column(nullable = false)
     private String estado;
 
+
+    @Column(length = 20)
+    private String rol;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -42,6 +46,9 @@ public class User {
         this.createdAt = LocalDateTime.now();
         if (this.estado == null) {
             this.estado = "activo";
+        }
+        if (this.rol == null) {
+            this.rol = "estudiante";
         }
     }
 
