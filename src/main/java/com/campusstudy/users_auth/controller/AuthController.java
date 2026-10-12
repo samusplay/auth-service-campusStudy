@@ -1,5 +1,7 @@
 package com.campusstudy.users_auth.controller;
 
+import com.campusstudy.users_auth.dto.AuthResponse;
+import com.campusstudy.users_auth.dto.LoginRequest;
 import com.campusstudy.users_auth.dto.RegistroRequest;
 import com.campusstudy.users_auth.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -13,4 +15,7 @@ public interface AuthController {
 
     @PostMapping("/registro")
     ResponseEntity<UserResponse> registrar(@Valid @RequestBody RegistroRequest request);
+
+    @PostMapping("/login")
+    ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request);
 }

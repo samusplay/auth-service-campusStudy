@@ -1,6 +1,8 @@
 package com.campusstudy.users_auth.controller.impl;
 
 import com.campusstudy.users_auth.controller.AuthController;
+import com.campusstudy.users_auth.dto.AuthResponse;
+import com.campusstudy.users_auth.dto.LoginRequest;
 import com.campusstudy.users_auth.dto.RegistroRequest;
 import com.campusstudy.users_auth.dto.UserResponse;
 import com.campusstudy.users_auth.service.AuthService;
@@ -19,5 +21,10 @@ public class AuthControllerImpl implements AuthController {
     public ResponseEntity<UserResponse> registrar(RegistroRequest request) {
         UserResponse usuarioCreado = authService.registrar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
+    }
+
+    @Override
+    public ResponseEntity<AuthResponse> login(LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
