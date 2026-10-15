@@ -1,5 +1,6 @@
 package com.campusstudy.users_auth.dto;
 
+import com.campusstudy.users_auth.model.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,15 @@ public class UserResponse {
 
     @JsonProperty("fecha_registro")
     private LocalDate fechaRegistro;
+
+    public static UserResponse from(User user) {
+        return UserResponse.builder()
+                .usuarioId(user.getUsuarioId())
+                .nombre(user.getNombre())
+                .email(user.getEmail())
+                .rol(user.getRol())
+                .estado(user.getEstado())
+                .fechaRegistro(user.getCreatedAt() == null ? null : user.getCreatedAt().toLocalDate())
+                .build();
+    }
 }

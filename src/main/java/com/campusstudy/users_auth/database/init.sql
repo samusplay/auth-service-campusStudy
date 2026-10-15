@@ -1,0 +1,1 @@
+CREATE DATABASE campusstudy_users_test;

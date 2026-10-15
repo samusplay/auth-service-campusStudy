@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: campusstudy-users-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: campusstudy_users
+    ports:
+      - "5433:5432"
+    volumes:
+      - campusstudy_users_data:/var/lib/postgresql/data
+      - ./src/main/java/com/campusstudy/users_auth/database/init.sql:/docker-entrypoint-initdb.d/02-init.sql
+
+volumes:
+  campusstudy_users_data:

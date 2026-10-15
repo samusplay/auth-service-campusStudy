@@ -5,5 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record AuthResponse(
     String token,
     @JsonProperty("usuario_id") Long usuarioId,
-    String email
+    String email,
+    String rol
 ) {}
