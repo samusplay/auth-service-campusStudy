@@ -176,6 +176,8 @@ Devuelve el perfil de ese id. En la dirección va el número, por ejemplo `/api/
 
 Lista todos los usuarios. Solo el rol `administrador` puede usarlo. Un estudiante o un docente recibe `403`.
 
+Estadística pide solo los estudiantes con `GET /api/v1/usuarios?rol=estudiante` y el token del administrador. Responde `200` con ese listado.
+
 Sin token, o con un token inválido, las rutas de `/api/v1/usuarios` responden `401`. Si la cuenta del token no está activa, responden `403`.
 
 ## 5. Probar

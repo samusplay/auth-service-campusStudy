@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,11 +29,16 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> listar(HttpServletRequest request) {
+    public ResponseEntity<List<UserResponse>> listar(
+            @RequestParam(name = "rol", required = false) String rol,
+            HttpServletRequest request) {
         if (!ROL_ADMINISTRADOR.equalsIgnoreCase(rol(request))) {
             throw new AccesoDenegadoException();
         }
-        List<UserResponse> usuarios = userRepository.findAll().stream()
+        List<UserResponse> usuarios = (rol == null || rol.isBlank()
+                ? userRepository.findAll()
+                : userRepository.findByRolIgnoreCase(rol.trim()))
+                .stream()
                 .map(UserResponse::from)
                 .toList();
         return ResponseEntity.ok(usuarios);

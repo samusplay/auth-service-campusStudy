@@ -106,5 +106,11 @@ class UsersAuthApplicationTests {
 						.header("Authorization", "Bearer " + adminToken))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].email").exists());
+
+		mockMvc.perform(get("/api/v1/usuarios")
+						.param("rol", "estudiante")
+						.header("Authorization", "Bearer " + adminToken))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].rol").value("estudiante"));
 	}
 }
