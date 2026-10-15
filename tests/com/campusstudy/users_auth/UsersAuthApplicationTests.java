@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/campusstudy_users_test")
+@SpringBootTest(properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/campusstudy_users")
 @AutoConfigureMockMvc
 class UsersAuthApplicationTests {
 

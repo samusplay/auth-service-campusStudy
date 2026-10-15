@@ -1,0 +1,28 @@
+# Terminal de Visual Studio Code, en la carpeta donde está pom.xml.
+# Windows: los comandos winget y mvnw.cmd.
+# Git Bash, Mac o Linux: los comandos brew y ./mvnw.
+# Así queda Java 17, Docker y las librerías. Docker abre la base al levantar el servicio.
+
+Java JDK 17
+Docker Desktop
+
+spring-boot-starter-web
+spring-boot-starter-validation
+spring-boot-starter-data-jpa
+postgresql
+spring-security-crypto
+jjwt-api==0.12.6
+jjwt-impl==0.12.6
+jjwt-jackson==0.12.6
+lombok
+spring-boot-starter-test
+
+# Windows
+winget install -e --id Microsoft.OpenJDK.17
+winget install -e --id Docker.DockerDesktop
+mvnw.cmd -DskipTests compile
+
+# Git Bash, Mac o Linux
+brew install openjdk@17
+brew install --cask docker
+./mvnw -DskipTests compile
