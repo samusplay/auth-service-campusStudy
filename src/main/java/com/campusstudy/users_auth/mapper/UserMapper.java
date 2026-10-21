@@ -1,6 +1,7 @@
 package com.campusstudy.users_auth.mapper;
 
 import com.campusstudy.users_auth.dto.UserResponse;
+import com.campusstudy.users_auth.dto.UsuarioResumenResponse;
 import com.campusstudy.users_auth.model.User;
 
 //Mapeamos los campos en la base de datos hacia un objeto
@@ -18,5 +19,9 @@ public final class UserMapper {
                 .estado(user.getEstado())
                 .fechaRegistro(user.getCreatedAt())
                 .build();
+    }
+    //metodo para mapear los campos del Dto de Invitar
+    public static UsuarioResumenResponse toResumen(User user) {
+        return new UsuarioResumenResponse(user.getUsuarioId(), user.getNombre(), user.getEmail());
     }
 }

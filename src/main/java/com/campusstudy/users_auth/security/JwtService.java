@@ -1,6 +1,7 @@
 package com.campusstudy.users_auth.security;
 
 import com.campusstudy.users_auth.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +30,27 @@ public class JwtService {
         return Jwts.builder()
                 .subject(String.valueOf(user.getUsuarioId()))
                 .claim("email", user.getEmail())
+                .claim("nombre", user.getNombre())
                 .claim("rol", user.getRol())
                 .issuedAt(ahora)
                 .expiration(new Date(ahora.getTime() + expirationMs))
                 // HS256 explícito: es el algoritmo que espera el gateway
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
+    }
+
+    // Verifica firma y expiración. Lanza JwtException (inválido/vencido) o IllegalArgumentException (vacío)
+    public Claims validar(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    // El usuario_id viaja en "sub" como texto ("5")
+    public Long extraerUsuarioId(Claims claims) {
+        return Long.valueOf(claims.getSubject());
     }
 
     public long getExpiracionSegundos() {

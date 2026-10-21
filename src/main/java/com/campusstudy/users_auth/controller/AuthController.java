@@ -1,9 +1,6 @@
 package com.campusstudy.users_auth.controller;
 
-import com.campusstudy.users_auth.dto.AuthResponse;
-import com.campusstudy.users_auth.dto.LoginRequest;
-import com.campusstudy.users_auth.dto.RegistroRequest;
-import com.campusstudy.users_auth.dto.UserResponse;
+import com.campusstudy.users_auth.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,4 +15,7 @@ public interface AuthController {
 
     @PostMapping("/login")
     ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request);
+
+    @PostMapping("/validate")
+    ResponseEntity<ValidateTokenResponse> validar(@RequestBody ValidateTokenRequest request);
 }

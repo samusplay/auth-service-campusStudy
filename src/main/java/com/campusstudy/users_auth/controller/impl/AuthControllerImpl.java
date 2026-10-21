@@ -1,10 +1,7 @@
 package com.campusstudy.users_auth.controller.impl;
 
 import com.campusstudy.users_auth.controller.AuthController;
-import com.campusstudy.users_auth.dto.AuthResponse;
-import com.campusstudy.users_auth.dto.LoginRequest;
-import com.campusstudy.users_auth.dto.RegistroRequest;
-import com.campusstudy.users_auth.dto.UserResponse;
+import com.campusstudy.users_auth.dto.*;
 import com.campusstudy.users_auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,5 +23,10 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public ResponseEntity<AuthResponse> login(LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @Override
+    public ResponseEntity<ValidateTokenResponse> validar(ValidateTokenRequest request) {
+        return ResponseEntity.ok(authService.validarToken(request.token()));
     }
 }

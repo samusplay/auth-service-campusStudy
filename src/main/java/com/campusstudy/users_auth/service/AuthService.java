@@ -1,9 +1,6 @@
 package com.campusstudy.users_auth.service;
 
-import com.campusstudy.users_auth.dto.AuthResponse;
-import com.campusstudy.users_auth.dto.LoginRequest;
-import com.campusstudy.users_auth.dto.RegistroRequest;
-import com.campusstudy.users_auth.dto.UserResponse;
+import com.campusstudy.users_auth.dto.*;
 
 public interface AuthService {
     //Crear un Usuario
@@ -11,4 +8,7 @@ public interface AuthService {
 
     //firma del servicio de Loggin
     AuthResponse login(LoginRequest request);
+
+    // Responde si un token es válido y de quién es (nunca lanza error por token malo)
+    ValidateTokenResponse validarToken(String token);
 }

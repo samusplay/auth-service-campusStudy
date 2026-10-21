@@ -1,9 +1,6 @@
 package com.campusstudy.users_auth.service.impl;
 
-import com.campusstudy.users_auth.dto.AuthResponse;
-import com.campusstudy.users_auth.dto.LoginRequest;
-import com.campusstudy.users_auth.dto.RegistroRequest;
-import com.campusstudy.users_auth.dto.UserResponse;
+import com.campusstudy.users_auth.dto.*;
 import com.campusstudy.users_auth.exception.EmailAlreadyExistsException;
 import com.campusstudy.users_auth.exception.InvalidCredentialsException;
 import com.campusstudy.users_auth.mapper.UserMapper;
@@ -11,6 +8,8 @@ import com.campusstudy.users_auth.model.User;
 import com.campusstudy.users_auth.repository.UserRepository;
 import com.campusstudy.users_auth.security.JwtService;
 import com.campusstudy.users_auth.service.AuthService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,6 +62,30 @@ public class AuthServiceImpl implements AuthService {
 
         // 4. Generar el token y armar la respuesta
         return toAuthResponse(user, jwtService.generarToken(user));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ValidateTokenResponse validarToken(String token) {
+        if (token == null || token.isBlank()) {
+            return ValidateTokenResponse.invalido();
+        }
+
+        try {
+            // 1. Firma y expiración
+            Claims claims = jwtService.validar(token.trim());
+            Long usuarioId = jwtService.extraerUsuarioId(claims);
+
+            // 2. El usuario debe existir y seguir activo (lo que la firma sola no sabe)
+            return userRepository.findById(usuarioId)
+                    .filter(user -> "activo".equalsIgnoreCase(user.getEstado()))
+                    .map(user -> ValidateTokenResponse.valido(UserMapper.toResponse(user)))
+                    .orElseGet(ValidateTokenResponse::invalido);
+
+        } catch (JwtException | IllegalArgumentException ex) {
+            // Vencido, firma falsa, mal formado o sub no numérico → "no es válido", no un error
+            return ValidateTokenResponse.invalido();
+        }
     }
 
     //metodo Privado
