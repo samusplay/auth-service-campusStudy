@@ -1,0 +1,81 @@
+stages:
+  - build
+  - image
+  - smoke
+  - release
+
+variables:
+  IMAGEN: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+
+compilar:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  services:
+    - name: postgres:16-alpine
+      alias: postgres
+  variables:
+    # Para el contenedor de Postgres
+    POSTGRES_DB: users_auth
+    POSTGRES_USER: campus
+    POSTGRES_PASSWORD: campus123
+    # Para Spring (el test contextLoads levanta la app completa)
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/users_auth"
+    SPRING_DATASOURCE_USERNAME: campus
+    SPRING_DATASOURCE_PASSWORD: campus123
+    APP_JWT_SECRET: "clave-solo-para-ci-de-al-menos-32-caracteres"
+    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  cache:
+    key:
+      files:
+        - pom.xml
+    paths:
+      - .m2/repository/
+  script:
+    - mvn -B verify
+
+# Plantilla: Docker dentro del job + login al registry, solo en la rama por defecto
+.docker:
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+publicar-imagen:
+  extends: .docker
+  stage: image
+  script:
+    - docker build -t "$IMAGEN" .
+    - docker push "$IMAGEN"
+
+prueba-humo:
+  extends: .docker
+  stage: smoke
+  script:
+    - docker network create humo
+    - docker run -d --name postgres --network humo
+      -e POSTGRES_DB=users_auth -e POSTGRES_USER=campus -e POSTGRES_PASSWORD=campus123
+      postgres:16-alpine
+    - until docker exec postgres pg_isready -h localhost -U campus -d users_auth; do sleep 1; done
+    - docker run -d --name auth --network humo
+      -e SPRING_DATASOURCE_URL="jdbc:postgresql://postgres:5432/users_auth"
+      -e SPRING_DATASOURCE_USERNAME=campus
+      -e SPRING_DATASOURCE_PASSWORD=campus123
+      -e APP_JWT_SECRET="clave-solo-para-la-prueba-de-humo-de-32-caracteres"
+      "$IMAGEN"
+    - docker run --rm --network humo curlimages/curl:8.10.1
+      --fail --silent --show-error --retry 30 --retry-delay 2 --retry-all-errors
+      http://auth:8081/health
+      || (docker logs auth; exit 1)
+
+promover-latest:
+  extends: .docker
+  stage: release
+  script:
+    - docker pull "$IMAGEN"
+    - docker tag "$IMAGEN" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
